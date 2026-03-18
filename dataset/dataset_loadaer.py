@@ -1,6 +1,6 @@
 import torchvision
 from torch.utils.data import DataLoader
-import torchvision.transforms as trasforms
+import torchvision.transforms as transforms
 
 def get_dataloaders(batch_size=64):
     # Inserisci qui le tue 'trasformazioni'
@@ -19,3 +19,4 @@ def get_dataloaders(batch_size=64):
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     return train_loader, test_loader
+
