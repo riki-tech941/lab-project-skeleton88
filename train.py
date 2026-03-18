@@ -68,3 +68,11 @@ if __name__ == "__main__":
             "train_accuracy": train_accuracy,
             "test_accuracy": test_accuracy
         })
+
+        # SALVIAMO IL CHECKPOINT
+        # Creiamo il percorso dove salvare il file (es. checkpoints/modello_epoca_1.pth)
+        percorso_salvataggio = f"checkpoints/modello_epoca_{epoch}.pth"
+        
+        # Salviamo il "cervello" del modello (state_dict)
+        torch.save(model.state_dict(), percorso_salvataggio)
+        print(f"✅ Checkpoint salvato: {percorso_salvataggio}")
