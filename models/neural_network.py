@@ -1,4 +1,5 @@
 #Definisco quindi la classe per la NeuralNetwork per immagini
+import torch
 from torch import nn
 import torchvision
 
