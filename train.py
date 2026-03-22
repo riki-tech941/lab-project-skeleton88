@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 # Importiamo i "pezzi" dagli altri file
-from models.neural_network import NeuralNetworkImm
+from models.neural_network import NewNeuralNetwork
 #se un file python sta dentro una cartella per importarlo devi fare
 # cartella.nomefile
 from dataset.dataset_loadaer import get_dataloaders
@@ -14,10 +14,11 @@ import wandb
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 2. Inizializzazione modello, caricamento dati, loss e ottimizzatore
-model = NeuralNetworkImm().to(device)
+model = NewNeuralNetwork().to(device)
 train_loader, test_loader = get_dataloaders(batch_size=64)
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+#learning rate più alto perche ho normalizzato
+optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
 
 # 3. La tua funzione di addestramento
 def train(epoch, model, train_loader, optimizer, criterion, device):
@@ -76,3 +77,5 @@ if __name__ == "__main__":
         # Salviamo il "cervello" del modello (state_dict)
         torch.save(model.state_dict(), percorso_salvataggio)
         print(f"✅ Checkpoint salvato: {percorso_salvataggio}")
+
+        

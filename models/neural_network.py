@@ -40,6 +40,52 @@ class NeuralNetworkImm(nn.Module):
 
       logits = self.last_layer(x)
       return logits
+  
+class NewNeuralNetwork(nn.Module):
+    def __init__(self):
+      super().__init__()
+      # Blocco 1: 3 → 64 canali
+      self.conv1_1 = nn.Conv2d(in_channels=3,   out_channels=64,  kernel_size=3, padding=1)
+      self.bn1_1   = nn.BatchNorm2d(64)
+      self.conv1_2 = nn.Conv2d(in_channels=64,  out_channels=64,  kernel_size=3, padding=1)
+      self.bn1_2   = nn.BatchNorm2d(64)
+
+      # Blocco 2: 64 → 128 canali
+      self.conv2_1 = nn.Conv2d(in_channels=64,  out_channels=128, kernel_size=3, padding=1)
+      self.bn2_1   = nn.BatchNorm2d(128)
+      self.conv2_2 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1)
+      self.bn2_2   = nn.BatchNorm2d(128)
+
+      # Blocco 3: 128 → 256 canali
+      self.conv3_1 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1)
+      self.bn3_1   = nn.BatchNorm2d(256)
+      self.conv3_2 = nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1)
+      self.bn3_2   = nn.BatchNorm2d(256)
+
+      self.relu        = nn.ReLU()
+      self.pool        = nn.MaxPool2d(kernel_size=2, stride=2)
+      #global pooling, comodo per evitare di calcolare dimensioni output
+      self.globalPool  = nn.AdaptiveAvgPool2d((1,1))
+      self.lastLayer   = nn.Linear(256, 200)
+
+    def forward(self, x):
+      # Blocco 1 — pool solo alla fine del blocco, non dopo ogni conv
+      x = self.relu(self.bn1_1(self.conv1_1(x)))
+      x = self.pool(self.relu(self.bn1_2(self.conv1_2(x))))
+
+      # Blocco 2
+      x = self.relu(self.bn2_1(self.conv2_1(x)))
+      x = self.pool(self.relu(self.bn2_2(self.conv2_2(x))))
+
+      # Blocco 3
+      x = self.relu(self.bn3_1(self.conv3_1(x)))
+      x = self.pool(self.relu(self.bn3_2(self.conv3_2(x))))
+
+      x = self.globalPool(x)
+      x = torch.flatten(x, 1)
+      logits = self.lastLayer(x)
+      return logits
+
 
 
 
