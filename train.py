@@ -9,6 +9,8 @@ from eval import test
 #serve a tenere traccia modello
 import wandb
 
+import time
+
 
 # 1. Setup del device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -17,8 +19,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = NewNeuralNetwork().to(device)
 train_loader, test_loader = get_dataloaders(batch_size=64)
 criterion = nn.CrossEntropyLoss()
-#learning rate più alto perche ho normalizzato
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # 3. La tua funzione di addestramento
 def train(epoch, model, train_loader, optimizer, criterion, device):
@@ -58,10 +59,20 @@ if __name__ == "__main__":
 
     num_epochs = 10
     for epoch in range(1, num_epochs + 1):
+        start_time = time.time()
         train_accuracy = train(epoch, model, train_loader, optimizer, criterion, device)
         # Chiamiamo la funzione test importata dal file eval.py
         test_accuracy = test(model, test_loader, criterion, device)
 
+        # 2. Segno il tempo di fine e calcolo la durata
+        end_time = time.time()
+        epoch_duration = end_time - start_time
+        
+        # Stampo il tempo in minuti e secondi
+        minuti = int(epoch_duration // 60)
+        secondi = int(epoch_duration % 60)
+        print(f" Tempo Epoca {epoch}: {minuti}m {secondi}s")
+        
         #wandb creerà aututomaticamente grafici con dati di
         # questo ciclo for, dati modello
         wandb.log({
@@ -78,4 +89,3 @@ if __name__ == "__main__":
         torch.save(model.state_dict(), percorso_salvataggio)
         print(f"✅ Checkpoint salvato: {percorso_salvataggio}")
 
-        
